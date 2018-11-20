@@ -6,6 +6,7 @@
 
 Nom du paquet : mysql-server
 
+
 ## Connect to MySQL from terminal
 
 ```
@@ -27,14 +28,15 @@ mysql> DESCRIBE <table_name>;
 mysql> SELECT <field_name_1>[,<field_name_2>...] 
 	-> FROM <table_name> 
 	-> WHERE <field_name> = "<value>"
-	-> WHERE <field_name> IS NULL;
+	-> [AND|OR] WHERE <field_name> IS NULL
+	-> ;
 -- Get ALL content of a table
 mysql> SELECT * FROM <table_name>;
 
 ```
 
 Note:  
-The syntax ```<table_name>``` can be replaced by syntax ```<db_name>.<table_name>```.
+The syntax ```<table_name>``` can be replaced by syntax ```<db_name>.<table_name>``` if no database is selected (```USE```).
 
 
 ## Sauvegardes de bases de données
@@ -43,6 +45,7 @@ The syntax ```<table_name>``` can be replaced by syntax ```<db_name>.<table_name
 mysqldump --user="${USERNAME}" --password="${PASSWORD}" "${db}" | gzip > "/var/lib/mysql/backup/${db}_$(date +%Y-%m-%d).sql.gz"
 ```
 See my [custom script](https://github.com/BenjiLeblond08/scripts/blob/master/MySQL/mysql_backup.sh)
+
 
 ## Utilisateurs et mot de passe
 
@@ -70,6 +73,7 @@ Changer son propre mot de passe
 mysql> ALTER USER USER() IDENTIFIED BY 'password';
 ```
 
+
 ## Droits
 
 Ajout de droits a un utilisateur
@@ -77,3 +81,26 @@ Ajout de droits a un utilisateur
 mysql> GRANT ALL PRIVILEGES ON *.* TO 'lpasr'@'%';
 ```
 ATTENTION, ici ont donne tous les droits sur toutes les bases
+
+
+## Configuration
+
+Config files:  
+```/etc/mysql/my.cnf```  
+
+### bind-adresse
+```CNF
+# Instead of skip-networking the default is now to listen only on
+# localhost which is more compatible and is not less secure.
+bind-address            = 127.0.0.1
+```
+
+Default config file for MariaDB: ```/etc/mysql/mariadb.conf.d/50-server.cnf```  
+
+
+## Resources
+
+- MySQL 8.0 Reference Manual
+	- [SQL Statement Syntax (Chapter 13)](https://dev.mysql.com/doc/refman/8.0/en/sql-syntax.html)  
+		- [Account Management Statements (13.7.1)](https://dev.mysql.com/doc/refman/8.0/en/account-management-sql.html)  
+		- [SHOW Syntax  (13.7.6)](https://dev.mysql.com/doc/refman/8.0/en/show.html)  
