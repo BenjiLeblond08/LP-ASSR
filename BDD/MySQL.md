@@ -2,17 +2,40 @@
 
 [TOC]
 
+## Introduction
+
+Nom du paquet : mysql-server
+
 ## Connect to MySQL from terminal
 
 ```
 $ mysql -u root -p
 ```
 
-## List Databases
+## SQL Basics
 
 ```SQL
+-- List databases
 mysql> SHOW DATABASES;
+-- Select a database to use
+mysql> USE <db_name>;
+-- List tables from the selected databases
+mysql> SHOW TABLES;
+-- Display fields (collumn names)
+mysql> DESCRIBE <table_name>;
+-- Get content of a table
+mysql> SELECT <field_name_1>[,<field_name_2>...] 
+	-> FROM <table_name> 
+	-> WHERE <field_name> = "<value>"
+	-> WHERE <field_name> IS NULL;
+-- Get ALL content of a table
+mysql> SELECT * FROM <table_name>;
+
 ```
+
+Note:  
+The syntax ```<table_name>``` can be replaced by syntax ```<db_name>.<table_name>```.
+
 
 ## Sauvegardes de bases de données
 
