@@ -1065,6 +1065,11 @@ body .markdown-body
 <li><a href="#sauvegardes-de-bases-de-donnees">Sauvegardes de bases de données</a></li>
 <li><a href="#utilisateurs-et-mot-de-passe">Utilisateurs et mot de passe</a></li>
 <li><a href="#droits">Droits</a></li>
+<li><a href="#configuration">Configuration</a><ul>
+<li><a href="#bind-adresse">bind-adresse</a></li>
+</ul>
+</li>
+<li><a href="#resources">Resources</a></li>
 </ul>
 </li>
 </ul>
@@ -1088,13 +1093,14 @@ body .markdown-body
 <span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">&lt;</span><span class="n">field_name_1</span><span class="o">&gt;</span><span class="p">[,</span><span class="o">&lt;</span><span class="n">field_name_2</span><span class="o">&gt;</span><span class="p">...]</span> 
     <span class="o">-&gt;</span> <span class="k">FROM</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span> 
     <span class="o">-&gt;</span> <span class="k">WHERE</span> <span class="o">&lt;</span><span class="n">field_name</span><span class="o">&gt;</span> <span class="o">=</span> <span class="ss">&quot;&lt;value&gt;&quot;</span>
-    <span class="o">-&gt;</span> <span class="k">WHERE</span> <span class="o">&lt;</span><span class="n">field_name</span><span class="o">&gt;</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span>
+    <span class="o">-&gt;</span> <span class="p">[</span><span class="k">AND</span><span class="o">|</span><span class="k">OR</span><span class="p">]</span> <span class="k">WHERE</span> <span class="o">&lt;</span><span class="n">field_name</span><span class="o">&gt;</span> <span class="k">IS</span> <span class="k">NULL</span>
+    <span class="o">-&gt;</span> <span class="p">;</span>
 <span class="c1">-- Get ALL content of a table</span>
 <span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="o">&lt;</span><span class="k">table_name</span><span class="o">&gt;</span><span class="p">;</span>
 </pre></div>
 
 <p>Note:<br />
-The syntax <code>&lt;table_name&gt;</code> can be replaced by syntax <code>&lt;db_name&gt;.&lt;table_name&gt;</code>.</p>
+The syntax <code>&lt;table_name&gt;</code> can be replaced by syntax <code>&lt;db_name&gt;.&lt;table_name&gt;</code> if no database is selected (<code>USE</code>).</p>
 <h2 id="sauvegardes-de-bases-de-donnees">Sauvegardes de bases de données<a class="headerlink" href="#sauvegardes-de-bases-de-donnees" title="Permanent link"></a></h2>
 <p><div class="codehilite"><pre>mysqldump --user=&quot;${USERNAME}&quot; --password=&quot;${PASSWORD}&quot; &quot;${db}&quot; | gzip &gt; &quot;/var/lib/mysql/backup/${db}_$(date +%Y-%m-%d).sql.gz&quot;
 </pre></div>
@@ -1122,4 +1128,25 @@ Changer son propre mot de passe
 <p>Ajout de droits a un utilisateur
 <div class="codehilite"><pre><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;lpasr&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span><span class="p">;</span>
 </pre></div>
-ATTENTION, ici ont donne tous les droits sur toutes les bases</p></article></body></html>
+ATTENTION, ici ont donne tous les droits sur toutes les bases</p>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link"></a></h2>
+<p>Config files:<br />
+<code>/etc/mysql/my.cnf</code>  </p>
+<h3 id="bind-adresse">bind-adresse<a class="headerlink" href="#bind-adresse" title="Permanent link"></a></h3>
+<div class="codehilite"><pre># Instead of skip-networking the default is now to listen only on
+# localhost which is more compatible and is not less secure.
+bind-address            = 127.0.0.1
+</pre></div>
+
+<p>Default config file for MariaDB: <code>/etc/mysql/mariadb.conf.d/50-server.cnf</code>  </p>
+<h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link"></a></h2>
+<ul>
+<li>MySQL 8.0 Reference Manual<ul>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/sql-syntax.html">SQL Statement Syntax (Chapter 13)</a>  <ul>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/account-management-sql.html">Account Management Statements (13.7.1)</a>  </li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/show.html">SHOW Syntax  (13.7.6)</a>  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></article></body></html>
