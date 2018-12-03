@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Nom du paquet : mysql-server
+Package name: mysql-server
 
 
 ### Informations
