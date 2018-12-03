@@ -49,7 +49,6 @@ mdadm --manage --remove /dev/md0 /dev/sdc
 mdadm --manage --add /dev/md0 /dev/sdc
 ```
 
-
 ## Set current configuration as persistant
 
 ```sh
