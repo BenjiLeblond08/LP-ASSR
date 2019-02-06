@@ -48,3 +48,54 @@ foreach ($site in $sites) {
 
 ```
 
+## Active Directory
+
+OU=InF,DC+Netacad,DC+Local
+
+ - Objets :
+	 * ADUser
+	 * ADComputer
+	 * ADGroup
+	 * ADOrganizationalUnit
+
+ - Actions :
+	 * NEW
+	 * GET
+	 * SET
+
+ - Operations sur objets:
+	 * NEW-ADUser
+	 * GET-ADUser
+	 * SET-ADUser
+
+### Installation Script
+
+#### Install Active Directory Domain Services
+
+```PowerShell
+Install-windowsfeature -name AD-Domain-Services -IncludeManagementTools
+```
+
+#### Deployment
+
+```PowerShell
+#
+# Windows PowerShell script for AD DS Deployment
+#
+
+Import-Module ADDSDeployment
+Install-ADDSForest `
+-CreateDnsDelegation:$false `
+-DatabasePath "C:\Windows\NTDS" `
+-DomainMode "Win2012R2" `
+-DomainName "goupil.local" `
+-DomainNetbiosName "GOUPIL" `
+-ForestMode "Win2012R2" `
+-InstallDns:$true `
+-LogPath "C:\Windows\NTDS" `
+-NoRebootOnCompletion:$false `
+-SysvolPath "C:\Windows\SYSVOL" `
+-Force:$true
+```
+
+
