@@ -11,7 +11,7 @@ md: Multiple Device driver aka Linux Software RAID
 
 Check available drives  
 ```sh
-fdisl -l
+fdisk -l
 ```
 
 ```sh

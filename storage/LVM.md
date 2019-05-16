@@ -2,8 +2,6 @@
 
 [TOC]
 
-## Cours - Gestion de volume
-
 ### Types d'operations
  - Ajout/Retrait d'unités de disques
 	- Maintenance avec utilisation temporaire de disques
@@ -23,7 +21,7 @@
 - Système de fichier ZFS
 - Système de fichier btrfs
 
-### Logical Volume Manager (LVM)
+## Logical Volume Manager (LVM)
  - Gestionnaire de périphérique mode bloc au niveau système
 	- Partition ou tout type de périphérique de stockage
  - Vue système homogène
@@ -33,7 +31,7 @@
  - Changements dynamiques de configuration
 	- Snapshots, redimensionnement, extension, déplacements
 
-### LVM Structure
+## LVM Structure
 
 - PV [Physical Volume]
 	- VG [Volume Group]
@@ -44,126 +42,152 @@
 
 ## TP
 
-### Commands
+## Commands
 non-exhaustive list
 
-|Physical Volume| |  Volume Group    | |Logical Volume |
-|:-------------:|-|:----------------:|-|:-------------:|
-|```pvcreate``` | |```vgcreate```    | |```lvcreate``` |
-|```pvchange``` | |```vgchange```    | |```lvchange``` |
-|```pvdata```   | |```vgrename```    | |```lvrename``` |
-|```pvdisplay```| |```vgdisplay```   | |```lvdisplay```|
-|```pvscan```   | |```vgscan```      | |```lvscan```   |
-|```pvmove```   | |```vgsplit```     | |```lvresize``` |
-|               | |```vgmerge```     | |```lvextend``` |
-|               | |```vgremove```    | |```lvremove``` |
-|               | |```vgcfgbackup``` | |```lvremove``` |
-|               | |```vgcfgrestore```| |               |
+|Physical Volume| |Volume Group  | |Logical Volume|
+|:-------------:|-|:------------:|-|:------------:|
+|`pvs`          | |`vgs`         | |`lvs`         |
+|`pvdisplay`    | |`vgdisplay`   | |`lvdisplay`   |
+|`pvcreate`     | |`vgcreate`    | |`lvcreate`    |
+|`pvchange`     | |`vgchange`    | |`lvchange`    |
+|`pvdata`       | |`vgrename`    | |`lvrename`    |
+|`pvscan`       | |`vgscan`      | |`lvscan`      |
+|`pvmove`       | |`vgsplit`     | |`lvresize`    |
+|               | |`vgmerge`     | |`lvextend`    |
+|               | |`vgremove`    | |`lvreduce`    |
+|               | |`vgcfgbackup` | |`lvremove`    |
+|               | |`vgcfgrestore`| |              |
 
-### Physical Volume
+## Physical Volume
 
-#### Création
+### Création
 
 ```sh
-pvcreate [-f[f]] [-y] <device>
+pvcreate [-f[f]] [-y] <device_PV_name>
 # Exemple:
-pvcreate /dev/sdb
-# If use over MD
-pvcreate /dev/md0
+pvcreate /dev/sda5 # Use partition
+pvcreate /dev/sdb # Use whole disk
+pvcreate /dev/md0 # Use Linux Software RAID
 ```
 Option args for ```pvcreate```:
 
-|ShortOpt | LongOpt     | Description   |
-|--------:|-------------|---------------|
-|```-f``` |```--force```| Force         |
-|```-ff```|             | Force Force ! |
-|```-y``` |```--yes```  | Accept all    |
-|```-q``` |```--quiet```| Quiet !       |
+|ShortOpt| LongOpt | Description   |
+|-------:|---------|---------------|
+|`-f`    |`--force`| Force         |
+|`-ff`   |         | Force Force ! |
+|`-y`    |`--yes`  | Accept all    |
+|`-q`    |`--quiet`| Quiet !       |
 
 
-### Volume Group
+## Volume Group
 
-#### Création
+### Création
 
 ```sh
-vgcreate <volume_group_name> <device>
+vgcreate <volume_group_name> <device_PV_name>
 # Exemple:
-vgcreate vg0 /dev/md0
+vgcreate VG1 /dev/sdb
 ```
 
-### Logical Volume
-
-#### Création
+### Add new Physical Volume to existing VG
 
 ```sh
-lvcreate -n <logical_volume_name> -L <lv_size> <volume_q_name>
+vgextend <volume_group_name> <device_PV_name>
 # Exemple:
-lvcreate -n lv0 -L 256M vg0
+vgextend VG0 /dev/sdb
 ```
-> lvcreate - Create a logical volume  
+
+
+## Logical Volume
+
+### Création
+
 ```sh
-lvcreate -L, --size Size[m|UNIT] VG
-    [ -l, --extents Number[PERCENT] ]
-    [ PV ... ]
-```  
-> 
-> ```-L, --size Size[m|UNIT]```  
-> Specifies the size of the new LV.
-> 
-> ```-l, --extents Number[PERCENT]```  
-> Specifies the size of the new LV in logical extents.
-> 
-> ```-n, --name String```  
+lvcreate -n <logical_volume_name> -L <lv_size> <volume_group_name>
+# Exemple:
+lvcreate -n lv0 -L 256M VG0
+```
+
+### Extend
+
+```sh
+lvextend -l <logical_volume_name> -L <lv_size> <volume_group_name>
+# Exemple:
+lvcreate -n lv0 -L 256M VG0
+```
+
+### Common options for `lvcreate` and `lvresize`
+
+lvcreate: create a logical volume in an existing volume group  
+lvresize: resize a logical volume
+
+`-n, --name LogicalVolume{Name|Path}`  
+> ___Only for `lvcreate`___  
 > Specifies the name of a new LV. Default when unspecified is "lvol#"
-> 
-> ```-v, --verbose ...```  
+
+`-L, --size [+|-]LogicalVolumeSize[b|B|s|S|k|K|m|M|g|G|t|T|p|P|e|E]`  
+> Set the logical volume size in units of megabytes. Size suffix of B for bytes, S for sectors as 512 bytes,
+> K for kilobytes, M for megabytes, G for gigabytes, T for terabytes, P for petabytes or E for exabytes is optional.  
+> Default unit is megabytes.
+
+`-l, --extents [+|-]LogicalExtentsNumber[%{VG|PVS|FREE|ORIGIN}]`  
+> Change or set the logical volume size in units of logical extents. With the + or - sign the value is added to or subtracted
+> from the actual size of the logical volume and without it, the value is taken as an absolute one. The total number of physical
+> extents affected will be greater than this if, for example, the volume is mirrored. The number can also be expressed as a
+> percentage of the total space in the Volume Group with the suffix %VG, relative to the existing size of the Logical Volume with
+> the suffix %LV, as a percentage of the remaining free space of the PhysicalVolumes on the command line with the suffix %PVS,
+> as a percentage of the remaining free space in the Volume  Group with the suffix %FREE, or (for a snapshot) as a percentage
+> of the total space in the Origin Logical Volume  with the suffix %ORIGIN. The resulting value is rounded downward for the
+> subtraction otherwise it is rounded upward. N.B. In a future release, when expressed as a percentage with PVS, VG or FREE, the
+> number will be treated as an approximate total number of physical extents to be allocated or freed (including extents used by
+> any mirrors, for example). The code may currently allocate or remove more space than you might otherwise expect.
+
+`-v, --verbose ...`  
 > Set verbose level. Repeat from 1 to 4. Output is stdout and stderr.
-> 
-> ```-d, --debug ...```  
+
+`-d, --debug ...`  
 > Set debug level. Repeat from 1 to 6. Output is log file / syslog.
-> 
-> ```-t, --test```  
+
+`-t, --test`  
 > Run in test mode.
-> 
-> ```-q, --quiet ...```  
-> Suppress output and log. Overrides ```--debug``` and ```--verbose```.  
->  Repeat once suppress any prompts with answer 'no'.
 
-### Create the usable volume
 
-#### Create the file system
+## Create the usable volume
+
+### Create the file system
 
 ```sh
 mkfs -t ext4 /dev/<volume_group_name>/<logical_volume_name>
-mkfs -t ext4 /dev/vg0/lv0
+mkfs -t ext4 /dev/VG0/lv0
 ```
 
-#### Mount volume
+### Mount volume
 
 ```sh
 mount <volume_path> <mount_point>
-mount /dev/vg0/lv0 /mnt/lv0
+mount /dev/VG0/lv0 /mnt/lv0
 ```
 
-### Hot resize
+## Hot resize
 
 Hot resize of the file system of LV0 to 512M
 
 Resize the logical volume:
 ```sh
-lvresize -L 512M /dev/vg0/lv0
+lvresize -L 512M /dev/VG0/lv0
 ```
 
 Resize the file system:
 ```sh
-resize2fs -p /dev/vg0/lv0 512M
+resize2fs -p /dev/VG0/lv0 512M
 ```
 
 > resize2fs - ext2/ext3/ext4 file system resizer  
-> ```resize2fs [OPTION] device [ size ]```
+> `resize2fs [OPTION] device [ size ]`
 > 
-> ```-f``` Force  
-> ```-p``` Prints percentage completion bars
+> `-f` Force  
+> `-p` Prints percentage completion bars
 
 
 Check the result:
@@ -172,7 +196,7 @@ df -h
 ```
 
 > df - report file system disk space usage  
-> ```df [OPTION]... [FILE]...```
+> `df [OPTION]... [FILE]...`
 > 
-> ```-h```, ```--human-readable```  
+> `-h`, `--human-readable`  
 > print sizes in powers of 1024 (e.g., 1023M)
